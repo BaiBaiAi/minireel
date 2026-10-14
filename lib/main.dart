@@ -41,7 +41,7 @@ Future<void> main() async {
   }
   MediaKit.ensureInitialized();
   await detectAndroidTv();
-  if (Platform.isAndroid && !isAndroidTV) {
+  if ((Platform.isAndroid && !isAndroidTV) || Platform.isIOS) {
     unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
   }
   runApp(const MiniReelBootstrap());

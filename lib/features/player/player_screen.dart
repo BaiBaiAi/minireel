@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../app/app_controller.dart';
+import '../../app/platform.dart';
 import '../../app/theme.dart';
 import '../../domain/models/drama.dart';
 import '../../domain/models/preferences.dart';
@@ -49,7 +49,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   bool _awake = false;
   bool _closing = false;
   bool _paging = false;
-  bool get _verticalPaging => Platform.isAndroid && !_landscape;
+  bool get _verticalPaging => isMobileApp && !_landscape;
   GestureHud? _hud;
   Duration? _railPreview;
   String? _message;
@@ -98,7 +98,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   Future<void> _prepareDevice() async {
-    if (Platform.isAndroid) {
+    if (isMobileApp) {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
       ]);
@@ -324,7 +324,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     });
     _showTop();
     _orientationChange = _orientationChange.then((_) async {
-      if (!mounted || _closing || !Platform.isAndroid) return;
+      if (!mounted || _closing || !isMobileApp) return;
       await SystemChrome.setPreferredOrientations(
         _landscape
             ? [
@@ -363,7 +363,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     _session.removeListener(_sessionChanged);
     _session.dispose();
     unawaited(_device.dispose());
-    if (Platform.isAndroid) {
+    if (isMobileApp) {
       unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
       unawaited(SystemChrome.setPreferredOrientations([]));
     }

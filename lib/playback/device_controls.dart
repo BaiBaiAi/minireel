@@ -34,7 +34,7 @@ final class DeviceControls {
     } on MissingPluginException {
       applicationBrightnessAvailable = false;
     }
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       try {
         final controller = VolumeController.instance;
         controller.showSystemUI = false;
@@ -68,7 +68,7 @@ final class DeviceControls {
   Future<void> setVolume(double value) async {
     volume = value.clamp(0, 1);
     if (_disposed) return;
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       try {
         await VolumeController.instance.setVolume(volume);
       } on PlatformException {
@@ -92,7 +92,7 @@ final class DeviceControls {
 
   Future<void> dispose() async {
     _disposed = true;
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || Platform.isIOS) {
       VolumeController.instance.removeListener();
       VolumeController.instance.showSystemUI = true;
     }

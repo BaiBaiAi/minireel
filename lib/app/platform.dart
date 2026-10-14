@@ -13,6 +13,13 @@ bool get isMacOSDesktop =>
 /// 行为可共享此判断。
 bool get isDesktopApp => isWindowsDesktop || isMacOSDesktop;
 
+/// 移动平台统称（Android + iOS）：竖屏翻页、沉浸式 UI、横竖屏切换等
+/// 移动端专属行为在此分发。TV 走 isAndroidTV 单独判断。
+bool get isMobileApp =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
+
 bool _tvMode = false;
 
 /// 调试用：强制 TV 模式（仅 debug 生效）。在电脑上按 F9 切换，
