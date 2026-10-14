@@ -36,7 +36,7 @@ jobs:
           cache: true
       - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
-          xcode-version: '16.4'
+          xcode-version: '16.2'
       - run: flutter pub get --enforce-lockfile
       - name: Analyze
         run: flutter analyze --no-pub
