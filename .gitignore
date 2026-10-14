@@ -83,3 +83,6 @@ node_modules/
 # Intentionally tracked: pubspec.lock, .metadata, assets/config/sources.json,
 # all Android icon/splash resources, gradlew, gradlew.bat, gradle-wrapper.jar,
 # gradle-wrapper.properties, test fixtures and future .github/workflows/ files.
+
+# WorkBuddy workspace data
+.workbuddy/

@@ -1,0 +1,58 @@
+name: iOS Build (unsigned)
+
+# iOS 平台验证构建：产出【未签名】IPA。
+# 用途：验证 iOS 编译链路是否打通；产物需经侧载工具
+# （Sideloadly / AltStore / TrollStore）或后续补签名后才能安装。
+# 正式签名发布方案另行在 release.yml 中扩展，需 Apple 开发者账号 secrets。
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'ios/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/ios-build.yml'
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.41.9'
+
+jobs:
+  ios:
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - uses: maxim-lobanov/setup-xcode@604064a43625a486088900af214d03b19e38ef79 # v1
+        with:
+          xcode-version: '16.4'
+      - run: flutter pub get --enforce-lockfile
+      - name: Analyze
+        run: flutter analyze --no-pub
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign --build-name "0.0.0-ci" --build-number "${{ github.run_number }}"
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p build/ios/ipa/Payload
+          cp -R build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          cd build/ios/ipa
+          zip -qry minireel-ios-unsigned.ipa Payload
+          ls -lh minireel-ios-unsigned.ipa
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-ios-unsigned
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
